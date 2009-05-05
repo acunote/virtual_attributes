@@ -1,7 +1,7 @@
 Virtual attributes plugin lets you do two things:
 1) define "virtual" attributes that work as usual AR attributes,
    but that are not saveable to the database
-2) preloaded attributes and associations that take field values from
+2) define preloadable attributes and associations that take field values from
    database queries and prepopulate virtual attributes or associations
    without the need of extra database query.
 
