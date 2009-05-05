@@ -1,0 +1,40 @@
+Virtual attributes plugin lets you do two things:
+1) define "virtual" attributes that work as usual AR attributes,
+   but that are not saveable to the database
+2) preloaded attributes and associations that take field values from
+   database queries and prepopulate virtual attributes or associations
+   without the need of extra database query.
+
+For example, you have two associated tables Foo and Bar:
+
+    class Bar < ActiveRecord::Base
+    end
+
+    class Foo < ActiveRecord::Base
+        belongs_to :bar
+
+        preloadable_association :bar
+        preloadable_attribute :zee
+    end
+
+    b = Bar.create :name => 'Bar'
+    f = Foo.create :name => 'Foo', :bar_id => b.id
+
+
+With preloadable_attribute you can use any value from the SQL query as
+attribute (just like with AR attribute).
+
+With preloadable association you can preload associated model from
+SQL query results without extra database query.
+The only thing you must do is to select all fields from associated model
+in the query, prefixed with "preloaded_<association_name>_".
+
+Example:
+
+    f = Foo.find_by_sql("select *, '1' as zee from foos left outer join (select id as preloaded_bar_id, name as preloaded_bar_name from bars) as bars on foos.bar_id = bars.preloaded_bar_id").first
+
+    assert_equal "Bar", f.bar.name
+    assert_equal "1", f.zee
+
+
+Copyright (c) 2008-2009 Pluron, Inc. Released under the MIT license.
